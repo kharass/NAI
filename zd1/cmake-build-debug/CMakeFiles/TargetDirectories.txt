@@ -1,0 +1,3 @@
+C:/Users/khara/OneDrive/Pulpit/zd1/cmake-build-debug/CMakeFiles/zd1.dir
+C:/Users/khara/OneDrive/Pulpit/zd1/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/khara/OneDrive/Pulpit/zd1/cmake-build-debug/CMakeFiles/rebuild_cache.dir
