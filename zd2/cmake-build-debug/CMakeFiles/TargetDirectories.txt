@@ -1,3 +1,0 @@
-Z:/NAI/lab2/cmake-build-debug/CMakeFiles/lab1.dir
-Z:/NAI/lab2/cmake-build-debug/CMakeFiles/edit_cache.dir
-Z:/NAI/lab2/cmake-build-debug/CMakeFiles/rebuild_cache.dir
