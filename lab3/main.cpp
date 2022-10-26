@@ -38,12 +38,7 @@ double rastrigin(vector <double> xy){
     return A*2.0 + x*x - A*cos(2*M_PI*x) + y*y - A*cos(2*M_PI*y);
 }
 
-//double invoke_given_func(function f, vector <double> v){
-//    double result = f(v);
-//    return result;
-//}
-
-vector<double> get_result(function<double(vector<double>)> f, double border_1, double border_2, int iterations){
+vector<double> metoda_pelnego_przegladu(function<double(vector<double>)> f, double border_1, double border_2, int iterations){
     random_device rd; // obtain a random number from hardware
     mt19937 gen(rd()); // seed the generator
     uniform_real_distribution<double> distr(border_1, border_2);
@@ -61,7 +56,7 @@ vector<double> get_result(function<double(vector<double>)> f, double border_1, d
     return closest_numbers;
 }
 
-vector<double> get_hill_neighbor(vector<double> ar) {
+vector<double> get_neighbor_hill(vector<double> ar) {
     double a = ar[0];
     double b = ar[1];
     random_device rd;
@@ -72,7 +67,7 @@ vector<double> get_hill_neighbor(vector<double> ar) {
     return {a, b};
 }
 
-vector<double> hill_climbing(function<double(vector<double>)> f, double border_1, double border_2, int iterations){
+vector<double> metoda_hill_climbing(function<double(vector<double>)> f, double border_1, double border_2, int iterations){
     random_device rd; // obtain a random number from hardware
     mt19937 gen(rd()); // seed the generator
     uniform_real_distribution<double> distr(border_1, border_2);
@@ -80,7 +75,7 @@ vector<double> hill_climbing(function<double(vector<double>)> f, double border_1
 
     double result = f(closest_numbers);
     for(int u = 0; u < iterations; u++){
-        vector<double> args = get_hill_neighbor(closest_numbers);
+        vector<double> args = get_neighbor_hill(closest_numbers);
         if (args[0] > border_2 or args[0] < border_1 or args[1] > border_2 or args[1] < border_1){
             continue;
         }
@@ -89,13 +84,12 @@ vector<double> hill_climbing(function<double(vector<double>)> f, double border_1
             result = new_result;
             closest_numbers = args;
         }
-
     }
     return closest_numbers;
 }
 
 
-vector<double> generate_neighbour(vector<double> current_point){
+vector<double> get_neighbour_wyzarzanie(vector<double> current_point){
     double a = current_point[0];
     double b = current_point[1];
     random_device rd;
@@ -106,7 +100,7 @@ vector<double> generate_neighbour(vector<double> current_point){
     return {a, b};
 }
 
-vector<double> simulate_annealing(function<double(vector<double>)> f, double border_1, double border_2, int iterations){
+vector<double> metoda_wyzarzania(function<double(vector<double>)> f, double border_1, double border_2, int iterations){
     random_device rd; // obtain a random number from hardware
     mt19937 gen(rd()); // seed the generator
     uniform_real_distribution<double> distr(border_1, border_2);
@@ -116,12 +110,11 @@ vector<double> simulate_annealing(function<double(vector<double>)> f, double bor
     vector<vector<double>> visited_points = {};
 
     for (int k = 0; k < iterations; k++){
-        vector<double> neighbour = generate_neighbour(closest_numbers);
+        vector<double> neighbour = get_neighbour_wyzarzanie(closest_numbers);
         double new_result = f(neighbour);
         if (new_result < result){
             result = new_result;
             closest_numbers = neighbour;
-//            visited_points.push_back(closest_numbers);
         }
         else {
             uniform_real_distribution<double> rand(0, 1);
@@ -131,13 +124,9 @@ vector<double> simulate_annealing(function<double(vector<double>)> f, double bor
             }
             double Tk = 10000.0/k;
             if (rand(gen) < exp(-1*temp)/Tk) {
-//                result = new_result;
                 closest_numbers = neighbour;
-//                visited_points.push_back(args);
             }
-
         }
-
     }
 
 
@@ -148,27 +137,26 @@ vector<double> simulate_annealing(function<double(vector<double>)> f, double bor
             result = new_result;
             closest_numbers = args;
         }
-
     }
     return closest_numbers;
 }
 
 
 int main(int argc, char **argv) {
-    vector<double> my_result = get_result(rastrigin, -5.12, 5.12, 1000000);
-    cout << "stochastic: " << endl;
+    vector<double> my_result = metoda_pelnego_przegladu(rastrigin, -5.12, 5.12, 1000000);
+    cout << "Metoda pelnego przegladu: " << endl;
     cout << my_result[0] << endl;
-    cout << my_result[1] << endl;
+    cout << my_result[1] << "\n" << endl;
 
-    vector<double> annealing_result = simulate_annealing(rastrigin, -5.12, 5.12, 1000000);
-    cout << "annealing result: " << endl;
+    vector<double> annealing_result = metoda_wyzarzania(rastrigin, -5.12, 5.12, 1000000);
+    cout << "Wyzarzanie: " << endl;
     cout << annealing_result[0] << endl;
-    cout << annealing_result[1] << endl;
+    cout << annealing_result[1] << "\n" << endl;
 
-    vector<double> hill_climb_result = hill_climbing(rastrigin, -5.12, 5.12, 1000000);
-    cout << "hill climbing result: " << endl;
+    vector<double> hill_climb_result = metoda_hill_climbing(rastrigin, -5.12, 5.12, 1000000);
+    cout << "Hill climbing: " << endl;
     cout << hill_climb_result[0] << endl;
-    cout << hill_climb_result[1] << endl;
+    cout << hill_climb_result[1] << "\n" << endl;
 
     return 0;
 }
