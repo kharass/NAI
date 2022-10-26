@@ -43,6 +43,7 @@ vector<double> metoda_pelnego_przegladu(function<double(vector<double>)> f, doub
     mt19937 gen(rd()); // seed the generator
     uniform_real_distribution<double> distr(border_1, border_2);
     vector<double> closest_numbers = {distr(gen), distr(gen)};
+//    losujemy liczbę z zakresu od border 1 do border 2 i potem wkładamy 2 takie losowe liczby do vektora(tablicy) "closest_numbers"
 
     double result = f(closest_numbers);
     for(int u = 0; u < iterations; u++){
@@ -56,16 +57,19 @@ vector<double> metoda_pelnego_przegladu(function<double(vector<double>)> f, doub
     return closest_numbers;
 }
 
-vector<double> get_neighbor_hill(vector<double> ar) {
-    double a = ar[0];
-    double b = ar[1];
+vector<double> get_neighbor_hill(vector<double> arg) {
+    double a = arg[0];
+    double b = arg[1];
+//    2 zmienne przypisane do wektora "arg"
     random_device rd;
     mt19937 gen(rd()); // seed the generator
     uniform_real_distribution<double> distance(-0.005, 0.005);
+//    losowanie liczby z zakresu
     a = a + distance(gen);
     b = b + distance(gen);
     return {a, b};
 }
+//  wygenerowanie nastepnego sąsiada dla wspinaczkowego
 
 vector<double> metoda_hill_climbing(function<double(vector<double>)> f, double border_1, double border_2, int iterations){
     random_device rd; // obtain a random number from hardware
@@ -79,6 +83,8 @@ vector<double> metoda_hill_climbing(function<double(vector<double>)> f, double b
         if (args[0] > border_2 or args[0] < border_1 or args[1] > border_2 or args[1] < border_1){
             continue;
         }
+//        jeżeli wyjdziemy poza border to na początek petli wracamy
+
         double new_result = f(args);
         if (new_result < result){
             result = new_result;
@@ -89,16 +95,19 @@ vector<double> metoda_hill_climbing(function<double(vector<double>)> f, double b
 }
 
 
-vector<double> get_neighbour_wyzarzanie(vector<double> current_point){
-    double a = current_point[0];
-    double b = current_point[1];
+vector<double> get_neighbour_wyzarzanie(vector<double> arg){
+    double a = arg[0];
+    double b = arg[1];
+//    2 zmienne przypisane do wektora "arg"
     random_device rd;
     mt19937 gen(rd()); // seed the generator
     normal_distribution<double> distance;
+//    losowanie liczby
     a = a + 0.01*distance(gen);
     b = b + 0.01*distance(gen);
     return {a, b};
 }
+//wygenerowanie nastepnego sąsiada dla wyzarzania
 
 vector<double> metoda_wyzarzania(function<double(vector<double>)> f, double border_1, double border_2, int iterations){
     random_device rd; // obtain a random number from hardware
@@ -118,18 +127,16 @@ vector<double> metoda_wyzarzania(function<double(vector<double>)> f, double bord
         }
         else {
             uniform_real_distribution<double> rand(0, 1);
-            double temp = new_result-result;
-            if (temp < 0){
-                temp = temp * -1;
+            double T = new_result-result;
+            if (T < 0){
+                T = T * -1;
             }
             double Tk = 10000.0/k;
-            if (rand(gen) < exp(-1*temp)/Tk) {
+            if (rand(gen) < exp(-1*T)/Tk) {
                 closest_numbers = neighbour;
             }
         }
     }
-
-
     for(int u = 0; u < iterations; u++){
         vector<double> args = {distr(gen), distr(gen)};
         double new_result = f(args);
@@ -143,20 +150,17 @@ vector<double> metoda_wyzarzania(function<double(vector<double>)> f, double bord
 
 
 int main(int argc, char **argv) {
-    vector<double> my_result = metoda_pelnego_przegladu(rastrigin, -5.12, 5.12, 1000000);
     cout << "Metoda pelnego przegladu: " << endl;
-    cout << my_result[0] << endl;
-    cout << my_result[1] << "\n" << endl;
+    vector<double> pp_result = metoda_pelnego_przegladu(himmel, -5.12, 5.12, 1000000);
+    cout << pp_result[0] << "\n" << pp_result[1] << "\n" << endl;
 
-    vector<double> annealing_result = metoda_wyzarzania(rastrigin, -5.12, 5.12, 1000000);
     cout << "Wyzarzanie: " << endl;
-    cout << annealing_result[0] << endl;
-    cout << annealing_result[1] << "\n" << endl;
+    vector<double> wyzarzanie_result = metoda_wyzarzania(himmel, -5.12, 5.12, 1000000);
+    cout << wyzarzanie_result[0] << "\n" << wyzarzanie_result[1] << "\n" << endl;
 
-    vector<double> hill_climb_result = metoda_hill_climbing(rastrigin, -5.12, 5.12, 1000000);
     cout << "Hill climbing: " << endl;
-    cout << hill_climb_result[0] << endl;
-    cout << hill_climb_result[1] << "\n" << endl;
+    vector<double> hill_result = metoda_hill_climbing(himmel, -5.12, 5.12, 1000000);
+    cout << hill_result[0] << "\n" << hill_result[1] << "\n" << endl;
 
     return 0;
 }
